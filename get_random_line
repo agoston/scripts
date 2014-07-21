@@ -1,0 +1,11 @@
+#!/bin/bash
+FILE=`tempfile`
+cat >$FILE
+
+NOFILES=`wc -l <$FILE`
+USER_RAND=`dd if=/dev/random bs=1 count=2 2>/dev/null | hexdump -e '"%d"'`
+DESFILE=$[USER_RAND%NOFILES+1]
+
+tail -n +$DESFILE <$FILE | head -1
+
+rm $FILE

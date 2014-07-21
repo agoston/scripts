@@ -1,0 +1,14 @@
+#!/usr/bin/groovy
+
+xsel = "xsel -o".execute().getInputStream().getText();
+
+xsel.split("<").each( {
+	img = it.find(".*(>|\$)");
+	if (img.startsWith("img")) {
+		matcher = img =~ / src=\"(.*?)\"/;
+		anchor = "<a href=\"" + matcher[0][1].replaceAll("_small\\.", "_big.") + "\" target=\"_blank\">";
+		
+		print("${anchor}<${img}</a>");
+	}
+});
+
