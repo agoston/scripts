@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ID=$(mysql -uroot -NBr -e "select ID from wp_posts where post_status = 'pending'" WORDPRESS | head -1)
+ID=$(mysql -uroot -NBr -e "select ID from wp_posts where post_status = 'pending' LIMIT 1" WORDPRESS | head -1)
 
 if ! [[ $ID ]]; then
 	exit 0
