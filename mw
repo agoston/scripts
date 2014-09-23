@@ -32,7 +32,7 @@ if ($pid) { # parent
 	}
 } else { # child
 	# '-channels 6', hogy az identify ne irja felul a 2 csatornara konverzioval a valodi csatorna-szamot
-	exec('/home/agoston/bin/mpv_identify.sh', 'FOO_', @ARGV);
+	exec($ENV{"HOME"} . '/bin/mpv_identify.sh', 'FOO_', @ARGV);
 }
 
 close MPINFO;
