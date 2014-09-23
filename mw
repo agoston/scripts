@@ -1,0 +1,147 @@
+#!/usr/bin/perl
+# mplayer wrapper script. celja:
+# - ac3+dts hang detektalasa es hwac3 hasznalata
+# - aac transcode hwac3-re
+# - aspect ratio detektalasa, es 16:10-nel laposabbra -vf expand plugin hasznalata
+# - forgatas filenev alapjan
+# - sub fps es offset beallitas sub filenev alapjan
+# - aspect beallitas a filenev alapjan
+# agoston, 2009-07-25
+
+use warnings;
+use strict;
+
+use Data::Dumper;
+
+my %info;
+my @cmdline;
+
+my $hostname = `hostname`;
+chomp $hostname;
+
+# get mplayer info of file - this is hacked, but the _only_ known way to be able to pass over filename unaltered
+# (otherwise, command arguments are separated by spaces)
+my $pid = open(MPINFO, '-|');
+$SIG{PIPE} = sub { die "pipe broken in sigpipe" };
+if ($pid) { # parent
+	while (<MPINFO>) {
+		my ($key, $value) = m/^(\w+)=(.+)$/;
+		chomp $key;
+		chomp $value;
+		$info{$key} = $value;
+	}
+} else { # child
+	# '-channels 6', hogy az identify ne irja felul a 2 csatornara konverzioval a valodi csatorna-szamot
+	exec('/home/agoston/bin/mpv_identify.sh', 'FOO_', @ARGV);
+}
+
+close MPINFO;
+#print Dumper \%info;
+
+### extract info from filename
+my $file = $ARGV[0];
+my @fn = split /\./, $file;
+my $fext = pop @fn;
+for (my $i = pop @fn; $i; $i = pop @fn) {
+	if ($i eq '90rot') {
+		push @cmdline, '--vf-add=rotate=90';
+	} elsif ($i eq '-90rot') {
+		push @cmdline, '--vf-add=rotate=270';
+	} elsif ($i eq '180rot') {
+		push @cmdline, '--vf-add=flip,mirror';
+	} elsif ($i =~ m/^(\d+)aspect$/) {
+		my $aspect = $1;
+		if ($fn[$#fn] =~ m/^\d+$/) {
+			$aspect = pop(@fn).':'.$aspect;
+		}
+		push @cmdline, '--aspect=' . $aspect;
+	} elsif ($i =~ m/^(-?\d+)avdelay$/) {
+		my $avdelay = $1;
+		if ($fn[$#fn] =~ m/^-?\d+$/) {
+			$avdelay = pop(@fn).'.'.$avdelay;
+		}
+		push @cmdline, '--delay=' . $avdelay;
+	} elsif ($i =~ m/^(\d+)volume$/) {
+		my $volume = $1;
+		push @cmdline, '--af-add=volume='.$volume;
+	} else {
+		### when meeting an unknown element, continue
+		push @fn, $i;
+		last;
+	}
+}
+
+#print Dumper \@fn;
+
+### find corresponding subtitles
+$file = join('.', @fn);
+open(SUBSEARCH, 'ls -1 \''.$file.'\'.*sub \''.$file.'\'.*srt 2>/dev/null |');  # for some reason, *{sub,srt} did not work (only in perl 5.8.9)
+while (<SUBSEARCH>) {
+	chomp;
+	my @sn = split /\./;
+	my $sext = pop @sn;
+	for (my $i = pop @sn; $i; $i = pop @sn) {
+		if ($i =~ m/^(\d+)fps$/) {
+			### previous tag is number? if yes, attach to this one
+			my $fps = $1;
+			if ($sn[$#sn] =~ m/^\d+$/) {
+				$fps = pop(@sn).'.'.$fps;
+			}
+			push @cmdline, '--sub-fps=' . $fps;
+		} elsif ($i =~ /^(-?\d+)ofs$/) {
+			### previous tag is number? if yes, attach to this one
+			my $ofs = $1;
+			if ($sn[$#sn] =~ m/^-?\d+$/) {
+				$ofs = pop(@sn).'.'.$ofs;
+			}
+			push @cmdline, '--sub-delay=' . (-$ofs);
+		} else {
+			### when meeting an unknown element, continue
+			next;
+		}
+	}
+	push @cmdline, '--sub-file=' . $_;
+	last; # ouch!
+}
+close(SUBSEARCH);
+
+### full screen - always on for movies
+push @cmdline, '--fs';
+
+# per host-specific stuff
+#if ($hostname eq 'bruin') {
+#	push @cmdline, qw|--vo=gl|;
+#	$ENV{'ALSA_CARD'} = 'Audigy2';
+#}
+
+### csak ha mpws-kent van inditva
+if ($0 =~ /mws$/) {
+	# hw ac3/dts decoding
+	if ($info{'audio_format'} eq 'ac3') {
+		push @cmdline, qw|--ad=spdif:ac3|;
+	} elsif ($info{'audio_format'} eq 'dts') {
+		push @cmdline, qw|--ad=spdif:dts|;
+	} elsif ($info{'audio_format'} eq 'aac') {
+		if ($info{'channels'} > 2) {
+			no warnings 'qw';
+			push @cmdline, qw|--ad=spdif:ac3, --channels=6 --af-add=channels=6,lavcac3enc=1:640:3|;
+		}
+	}
+}
+
+### ratio setting
+my $width = $info{'width'};
+my $height = $info{'height'};
+if (defined $width && defined $height && ($width > 0) && ($height > 0)) {
+	my $ratio = $width / $height;
+	if ($ratio > 16/10) {
+		push @cmdline, qw|--vf-add=expand=::::16/10:1|;
+	}
+}
+
+### extra args passed on cmdline
+push @cmdline, @ARGV[0..$#ARGV];
+
+unshift @cmdline, qw/mpv/;
+print Dumper \$hostname,\@cmdline;
+system(@cmdline);
