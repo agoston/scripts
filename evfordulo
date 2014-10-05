@@ -1,0 +1,11 @@
+#!/bin/bash
+FILE=${0}.num
+NUM=$(cat $FILE)
+
+ELAPSED_DAYS=$((($(date +%s)-1079143200)/86400))
+ACTNUM=$((ELAPSED_DAYS/50))
+
+if [[ $ACTNUM -gt $NUM ]]; then
+	echo "Tudtad, hogy ma este lesz $ELAPSED_DAYS napja, hogy ismerjük egymást? Este ünneplünk! :)" | mail -s "Édesem..."  horvath.ibolya@yahoo.com,horvath.agoston@gmail.com
+	echo $ACTNUM >$FILE
+fi

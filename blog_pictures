@@ -1,0 +1,40 @@
+#!/bin/bash
+
+DATE=`date +%y%m%d`
+
+# atnevez rendesen
+find -iregex '.*\.jpe?g$' -print0 | xargs -0 blog_pic_rename.sh 
+
+# beforgat
+find -iname '*.JPG' -exec exiftran -i -a {} \;
+
+# main
+ls -1 *.jpg 2>/dev/null | while read i
+do
+	BIG=${i%%.jpg}_big.jpg
+	SMALL=${i%%.jpg}_small.jpg
+
+	# thumbnail+html eloallitasa
+	convert $i -quality 70 -thumbnail 160x120 $SMALL
+	GEOMETRY=`identify $SMALL | cut -d" " -f3`
+	XRES=${GEOMETRY/x*/}
+	YRES=${GEOMETRY/*x/}
+	echo -n '<a class="fancybox-thumb" rel="fancybox-thumb" href="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$BIG'"><IMG CLASS=smallImage WIDTH='$XRES' HEIGHT='$YRES' SRC="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$SMALL'" TITLE="..."></a>'
+
+	# nagykep eloallitasa - csak akkor meretezunk, ha eleg nagy, kulonben hagyjuk az eredeti meretet
+	ORIG_GEOMETRY=`identify $i | cut -d" " -f3`
+	ORIG_XRES=${ORIG_GEOMETRY/x*/}
+	ORIG_YRES=${ORIG_GEOMETRY/*x/}
+	if [ $ORIG_XRES -gt 1600 ] || [ $ORIG_YRES -gt 1600 ]; then
+		convert $i -resize 1600x1600 $BIG
+	else
+		cp $i $BIG
+	fi
+done
+
+set -e
+DESTDIR=/net/seagoat/home/ftp/www/pictures/blog/$DATE
+mkdir -p $DESTDIR 2>/dev/null
+cp *_small.jpg *_big.jpg $DESTDIR/
+cd $DESTDIR
+chmod 644 *

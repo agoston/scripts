@@ -1,0 +1,7 @@
+#!/bin/bash
+ls -1 | while read i; do
+	j="${i,,}"
+	if [ "$i" != "$j" ]; then
+		mv -v "$i" "$j"
+	fi
+done
