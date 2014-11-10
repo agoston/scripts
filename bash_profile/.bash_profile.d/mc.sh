@@ -1,0 +1,1 @@
+/usr/share/mc/bin/mc.sh

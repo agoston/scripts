@@ -1,0 +1,23 @@
+c_pwd() {
+        LAST_C=$?
+        if [ z$UID == z0 ]
+        then
+                echo -n 44m[$USER:$HOSTNAME:
+        else
+                echo -n 41m[$USER:$HOSTNAME:
+        fi
+        [ $LAST_C -ne 0 ] && echo -n "$LAST_C:"
+        C_PWD=${PWD/#$HOME/\~}
+        C_COL=$[COLUMNS/2-10]
+        if [ ${#C_PWD} -lt $[C_COL*2] ] ; then
+                echo -n "$C_PWD"
+        else
+                echo -n "${C_PWD:0:C_COL}~${C_PWD:${#C_PWD}-C_COL:C_COL}"
+        fi
+        echo -n ]
+}
+
+export GIT_PS1_SHOWDIRTYSTATE=yes # show (*) unstaged (+) staged
+export GIT_PS1_SHOWUPSTREAM=auto # show when are ahead of behind
+export GIT_PS1_SHOWSTASHSTATE=auto
+export PS1="\\033[33m\\033[1m\\033[\$(c_pwd)\[\033[0;36m\]\$(__git_ps1)\\033[0m\\033[38m\\033[0m\015\012"
