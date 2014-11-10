@@ -15,7 +15,7 @@ do
 	SMALL=${i%%.jpg}_small.jpg
 
 	# thumbnail+html eloallitasa
-	convert $i -quality 70 -thumbnail 160x120 $SMALL
+	convert $i -quality 70 -thumbnail 320x240 $SMALL
 	GEOMETRY=`identify $SMALL | cut -d" " -f3`
 	XRES=${GEOMETRY/x*/}
 	YRES=${GEOMETRY/*x/}
@@ -25,10 +25,11 @@ do
 	ORIG_GEOMETRY=`identify $i | cut -d" " -f3`
 	ORIG_XRES=${ORIG_GEOMETRY/x*/}
 	ORIG_YRES=${ORIG_GEOMETRY/*x/}
-	if [ $ORIG_XRES -gt 1600 ] || [ $ORIG_YRES -gt 1600 ]; then
-		convert $i -resize 1600x1600 $BIG
+	if [ $ORIG_XRES -gt 3200 ] || [ $ORIG_YRES -gt 3200 ]; then
+		convert $i -resize 3200x3200 $BIG
 	else
-		cp $i $BIG
+		# still convert to reduce size
+		convert $i $BIG
 	fi
 done
 
