@@ -1,3 +1,10 @@
 *~
 *.log
 *.num
+
+# shit that has to be in $PATH
+chromedriver
+
+# stuff that is per-host
+sync_webplay.sh
+
