@@ -19,7 +19,7 @@ do
 	GEOMETRY=`identify $SMALL | cut -d" " -f3`
 	XRES=${GEOMETRY/x*/}
 	YRES=${GEOMETRY/*x/}
-	echo -n '<a class="fancybox-thumb" rel="fancybox-thumb" href="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$BIG'"><IMG CLASS=smallImage WIDTH='$XRES' HEIGHT='$YRES' SRC="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$SMALL'" TITLE="..."></a>'
+	echo -n '<a class="fancybox-thumb" rel="fancybox-thumb" href="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$BIG'"><IMG CLASS=smallImage WIDTH='$((XRES/2))' HEIGHT='$((YRES/2))' SRC="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$SMALL'" TITLE="..."></a>'
 
 	# nagykep eloallitasa - csak akkor meretezunk, ha eleg nagy, kulonben hagyjuk az eredeti meretet
 	ORIG_GEOMETRY=`identify $i | cut -d" " -f3`
