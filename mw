@@ -1,12 +1,23 @@
 #!/usr/bin/perl
-# mplayer wrapper script. celja:
-# - ac3+dts hang detektalasa es hwac3 hasznalata
-# - aac transcode hwac3-re
-# - aspect ratio detektalasa, es 16:10-nel laposabbra -vf expand plugin hasznalata
-# - forgatas filenev alapjan
-# - sub fps es offset beallitas sub filenev alapjan
-# - aspect beallitas a filenev alapjan
-# agoston, 2009-07-25
+# wrapper script around mpv. Goals:
+# - detect ac3 sound and use hwac3 output (for amplifiers with ac3 over spdif support)
+# - same for dts
+# - transcode AAC to AC3 (my little amp has no aac support)
+#
+# Based on filename:
+# - detect aspect ratio, expand picture to full screen so that subtitles are positioned in the lower black area
+# - rotate +-90 degrees
+# - detect correct sub
+# - sub fps and offset settings
+# - set aspect
+#
+# Some extras (commented out but could come handy):
+# - taskset 0x4, so that mplayer always runs on the same core (workaround for already fixed bug)
+# - swgov to set governor to performance and avoid ondemand's contast scalebacks in some cases (workaround for already fixed bug)
+# - iecset, to switch spdif port back to digital (workaround for already fixed bug)
+# - set environment for audio output for ALSA
+# - set -vo gl
+# agoston, 2009-07-25, 2014-12-15
 
 use warnings;
 use strict;
