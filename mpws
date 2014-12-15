@@ -1,7 +1,9 @@
 #!/usr/bin/perl
 # mplayer wrapper script. celja:
-# - ac3+dts hang detektalasa es hwac3 hasznalata
-# - aac transcode hwac3-re
+# - ac3 hang detektalasa es hwac3 hasznalata
+# - dts-re ugyanez
+# - ac3 transcode AAC-re
+### - taskset 0x4, hogy mindig a 3. magon fusson, ne legyen dobalozas magok kozott
 # - aspect ratio detektalasa, es 16:10-nel laposabbra -vf expand plugin hasznalata
 # - forgatas filenev alapjan
 # - sub fps es offset beallitas sub filenev alapjan
@@ -25,6 +27,7 @@ my $pid = open(MPINFO, '-|');
 $SIG{PIPE} = sub { die "pipe broken in sigpipe" };
 if ($pid) { # parent
 	while (<MPINFO>) {
+		print $_;
 		my ($key, $value) = m/^(\w+)=(.+)$/;
 		chomp $key;
 		chomp $value;
@@ -32,14 +35,14 @@ if ($pid) { # parent
 	}
 } else { # child
 	# '-channels 6', hogy az identify ne irja felul a 2 csatornara konverzioval a valodi csatorna-szamot
-	exec($ENV{"HOME"} . '/bin/mpv_identify.sh', 'FOO_', @ARGV);
+	exec('mplayer', '-really-quiet', '-channels', '6', '-identify', '-ao', 'null', '-vo', 'null', '-frames', '0', @ARGV, '2>/dev/null');
 }
 
 close MPINFO;
 #print Dumper \%info;
 
-my $width = $info{'width'};
-my $height = $info{'height'};
+my $width = $info{'ID_VIDEO_WIDTH'};
+my $height = $info{'ID_VIDEO_HEIGHT'};
 
 ### extract info from filename
 my $file = $ARGV[0];
@@ -47,29 +50,29 @@ my @fn = split /\./, $file;
 my $fext = pop @fn;
 for (my $i = pop @fn; $i; $i = pop @fn) {
 	if ($i eq '90rot') {
-		push @cmdline, '--vf-add=rotate=90';
+		push @cmdline, qw|-vf-add rotate=1|;
 	} elsif ($i eq '-90rot') {
-		push @cmdline, '--vf-add=rotate=270';
-	} elsif ($i eq '180rot') {
-		push @cmdline, '--vf-add=flip,mirror';
+		push @cmdline, qw|-vf-add rotate=2|;
 	} elsif ($i =~ m/^(\d+)aspect$/) {
 		my $aspect = $1;
 		if ($fn[$#fn] =~ m/^\d+$/) {
 			$aspect = pop(@fn).':'.$aspect;
 		}
-		push @cmdline, '--aspect=' . $aspect;
-	} elsif ($i =~ m/^(-?\d+)avdelay$/) {
+		push @cmdline, '-aspect', $aspect;
+        } elsif ($i =~ m/^(-?\d+)avdelay$/) {
 		my $avdelay = $1;
 		if ($fn[$#fn] =~ m/^-?\d+$/) {
 			$avdelay = pop(@fn).'.'.$avdelay;
 		}
-		push @cmdline, '--delay=' . $avdelay;
+		push @cmdline, '-delay', $avdelay;
 	} elsif ($i =~ m/^(\d+)volume$/) {
 		my $volume = $1;
-		push @cmdline, '--af-add=volume='.$volume;
-        } elsif ($i eq 'halfsbs') {
-                push @cmdline, '--vf-add=crop='.($width/2).':'.$height.':0:0';
-                push @cmdline, '--vf-add=dsize='.($width).':'.$height;
+		push @cmdline, '-af', 'volume='.$volume;
+	} elsif ($i eq 'halfsbs') {
+		push @cmdline, '-vf-add', 'crop='.($width/2).':'.$height.':0:0';
+		push @cmdline, '-vf-add', 'dsize='.($width).':'.$height;
+	} elsif ($i =~ m/^([a-z]{2,3})lang/) {
+		push @cmdline, '-slang', $1, '-alang', $1;
 	} else {
 		### when meeting an unknown element, continue
 		push @fn, $i;
@@ -77,8 +80,7 @@ for (my $i = pop @fn; $i; $i = pop @fn) {
 	}
 }
 
-#print Dumper \@fn;
-
+print Dumper \@fn;
 ### find corresponding subtitles
 $file = join('.', @fn);
 open(SUBSEARCH, 'ls -1 \''.$file.'\'.*sub \''.$file.'\'.*srt 2>/dev/null |');  # for some reason, *{sub,srt} did not work (only in perl 5.8.9)
@@ -93,44 +95,47 @@ while (<SUBSEARCH>) {
 			if ($sn[$#sn] =~ m/^\d+$/) {
 				$fps = pop(@sn).'.'.$fps;
 			}
-			push @cmdline, '--sub-fps=' . $fps;
+			push @cmdline, '-subfps', $fps;
 		} elsif ($i =~ /^(-?\d+)ofs$/) {
 			### previous tag is number? if yes, attach to this one
 			my $ofs = $1;
 			if ($sn[$#sn] =~ m/^-?\d+$/) {
 				$ofs = pop(@sn).'.'.$ofs;
 			}
-			push @cmdline, '--sub-delay=' . (-$ofs);
+			push @cmdline, '-subdelay', $ofs;
 		} else {
 			### when meeting an unknown element, continue
 			next;
 		}
 	}
-	push @cmdline, '--sub-file=' . $_;
+	push @cmdline, '-sub', $_;
 	last; # ouch!
 }
 close(SUBSEARCH);
 
 ### full screen - always on for movies
-push @cmdline, '--fs';
+push @cmdline, '-fs';
+
+# lavdopts threads
+push @cmdline, qw|-lavdopts threads=4|;
 
 # per host-specific stuff
-#if ($hostname eq 'bruin') {
-#	push @cmdline, qw|--vo=gl|;
-#	$ENV{'ALSA_CARD'} = 'Audigy2';
-#}
+if ($hostname eq 'bruin') {
+	push @cmdline, qw|-vo gl|;
+	$ENV{'ALSA_CARD'} = 'Audigy2';
+}
 
 ### csak ha mpws-kent van inditva
-if ($0 =~ /mws$/) {
+if ($0 =~ /mpws$/) {
 	# hw ac3/dts decoding
-	if ($info{'audio_format'} eq 'ac3') {
-		push @cmdline, qw|--ad=spdif:ac3|;
-	} elsif ($info{'audio_format'} eq 'dts') {
-		push @cmdline, qw|--ad=spdif:dts|;
-	} elsif ($info{'audio_format'} eq 'aac') {
-		if ($info{'channels'} > 2) {
+	if ($info{'ID_AUDIO_FORMAT'} eq '8192') {
+		push @cmdline, qw|-ac hwac3|;
+	} elsif ($info{'ID_AUDIO_FORMAT'} eq '8193') {
+		push @cmdline, qw|-ac hwdts|;
+	} elsif ($info{'ID_AUDIO_FORMAT'} eq 'MP4A') { # AAC
+		if ($info{'ID_AUDIO_NCH'} > 2) {
 			no warnings 'qw';
-			push @cmdline, qw|--ad=spdif:ac3, --channels=6 --af-add=channels=6,lavcac3enc=1:640:3|;
+			push @cmdline, qw|-ac hwac3, -channels 6 -af channels=6,lavcac3enc=1:640:3|;
 		}
 	}
 }
@@ -139,13 +144,31 @@ if ($0 =~ /mws$/) {
 if (defined $width && defined $height && ($width > 0) && ($height > 0)) {
 	my $ratio = $width / $height;
 	if ($ratio > 16/10) {
-		push @cmdline, qw|--vf-add=expand=::::16/10:1|;
+		push @cmdline, qw|-vf-add expand=:::::16/10|;
 	}
 }
 
 ### extra args passed on cmdline
 push @cmdline, @ARGV[0..$#ARGV];
 
-unshift @cmdline, qw/mpv/;
+# to work around spdif bug that switched spdif to non-audio, and thus,
+# pcm won't be sent through spdif but analogue
+# agoston, 2009-09-03
+#if ($hostname eq 'bruin') {
+#	system("iecset audio true");
+#}
+
+# set cpu governor to performance - ubuntu jaunty has skipping problems with mplyayer otherwise
+# agoston, 2010-03-20
+#system("sd /home/us/bin/swgov 2 performance");
+
+#unshift @cmdline, qw/taskset 0x4 mplayer/;
+unshift @cmdline, qw/mplayer/;
 print Dumper \$hostname,\@cmdline;
 system(@cmdline);
+
+#if ($hostname eq 'bruin') {
+#	system("iecset audio true");
+#}
+
+#system("sd /home/us/bin/swgov 2 ondemand");
