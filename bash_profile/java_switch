@@ -1,0 +1,19 @@
+function switch_java() {
+  if [ -z "$1" ]; then
+    echo "Please select a Java version from";
+    /usr/libexec/java_home -V
+    echo "JAVA_HOME=$JAVA_HOME"
+    return 1;
+  fi
+
+  JAVA_HOME=$(/usr/libexec/java_home -v $1)
+
+  if [ $? -eq 0 ]; then
+    export JAVA_HOME
+    echo "JAVA_HOME=$JAVA_HOME"
+  fi
+}
+
+alias j6='switch_java 1.6'
+alias j7='switch_java 1.7'
+alias j8='switch_java 1.8'

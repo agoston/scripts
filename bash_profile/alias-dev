@@ -1,12 +1,5 @@
-alias l="ls --color=auto -l"
-alias ls='ls --color=auto'
-
 alias mci="mvn clean install"
-
 alias gpr="git pull --rebase"
 alias gs="git status"
 alias gc="git checkout"
 alias gcm="git checkout master"
-
-alias b="ssh bruin"
-alias s="cd /net/seagoat/home/ftp"
