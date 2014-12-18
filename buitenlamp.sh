@@ -1,20 +1,11 @@
 #!/bin/bash
 
-send_command() {
-	TODAY=$(date +%m%d)
-	TIME=$(gawk "/^${TODAY} / {print \$$1}" <$0)
+TODAY=$(date +%m%d)
+OFF=$(gawk "/^${TODAY} / {print \$2}" <$0)
+ON=$(gawk "/^${TODAY} / {print \$4}" <$0)
 
-	echo "echo \"set FS20_cf4b01 $2\" | socat - tcp:localhost:7072" | at $TIME
-}
-
-if [[ $1 == off ]]; then
-	send_command 2 off &>$0.log
-elif [[ $1 == on ]]; then
-	send_command 4 on &>$0.log
-else 
-	echo '$1 == on || off'
-	exit 1
-fi
+echo "~/bin/fs20_send.sh 1 off" | at $OFF
+echo "~/bin/fs20_send.sh 1 on" | at $ON
 
 exit 0
 
