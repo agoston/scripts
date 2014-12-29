@@ -5,7 +5,7 @@ for i in "$@"; do
 	# only rename if exif is right
 	if [[ $NEWNAME =~ img_[0-9]{8}_[0-9]{6}.jpg ]]; then
 		# self?
-		if [[ "$NEWNAME" == "$i" ]]; then continue; fi
+		if [[ "$NEWNAME" == "$(basename $i)" ]]; then continue; fi
 
 		# find unused filename
 		COUNT=2
