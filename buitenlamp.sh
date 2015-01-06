@@ -4,8 +4,9 @@ TODAY=$(date +%m%d)
 OFF=$(gawk "/^${TODAY} / {print \$2}" <$0)
 ON=$(gawk "/^${TODAY} / {print \$4}" <$0)
 
-echo "~/bin/fs20_send.sh 1 off" | at $OFF
-echo "~/bin/fs20_send.sh 1 on" | at $ON
+# swallows at stderr, but no other way to silence it for cron
+echo "~/bin/fs20_send.sh 1 off" | at $OFF 2>/dev/null
+echo "~/bin/fs20_send.sh 1 on" | at $ON 2>/dev/null
 
 exit 0
 
