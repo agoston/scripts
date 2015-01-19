@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /Users/agoston/Applications/GIMP.app/Contents/MacOS/GIMP "$@"
