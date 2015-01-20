@@ -1,1 +1,4 @@
 [[ -f "`brew --prefix`/etc/bash_completion" ]] && source "`brew --prefix`/etc/bash_completion"
+
+# use gnu binutils in shell
+export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
