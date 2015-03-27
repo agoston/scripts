@@ -3,6 +3,9 @@
 // to avoid node.js ignoring self-signed certificates
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+// DEBUG
+console.log = function() {};
+
 // imports
 var xmlrpc = require('xmlrpc');
 var config = require('./wp_secret.js');
@@ -13,7 +16,7 @@ var client = xmlrpc.createSecureClient(config.client);
 
 client.methodCall('wp.getPosts', [0, config.wordpress.username, config.wordpress.password, {post_status: "pending"}], function (error, value) {
     console.log('getPosts result', value);
-    console.log('getPosts error', error);
+    if (error != null) throw error;
 
     var tempDir = exec('mktemp -d', {silent: true}).output.trim();
     cd(tempDir);
@@ -31,7 +34,7 @@ client.methodCall('wp.getPosts', [0, config.wordpress.username, config.wordpress
             rm('-f', tempDir + '/*');
             return response.join('');
         });
-        
+
         var newPost = {
             post_content: newContent.replace(/<\/a>\s*<a /ig, '</a><a '),
             post_status: 'publish'
@@ -39,7 +42,7 @@ client.methodCall('wp.getPosts', [0, config.wordpress.username, config.wordpress
 
         client.methodCall('wp.editPost', [0, config.wordpress.username, config.wordpress.password, post.post_id, newPost], function (error, value) {
             console.log('editPost result', value);
-            console.log('editPost error', error);
+            if (error != null) throw error;
         });
 
         console.log('newPost', newPost);
@@ -47,5 +50,3 @@ client.methodCall('wp.getPosts', [0, config.wordpress.username, config.wordpress
 
     rm('-rf', tempDir);
 });
-
-console.log('gelukt!');
