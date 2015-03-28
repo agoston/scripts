@@ -23,7 +23,7 @@ client.methodCall('wp.getPosts', [0, config.wordpress.username, config.wordpress
 
     value.forEach(function (post) {
         var newContent = post.post_content.replace(/<a href=".*\/(wordpress\/wp-content\/uploads\/.*)">.*<\/a>/ig, function (match, p1) {
-            //TODO: use mv so that we also clean up
+            //TODO: rm p1.replace('.jpg', '*') to clean up wordpress upload dir
             cp('/home/ftp/www/' + p1, tempDir);
             var response = [];
             exec('blog_pictures', {silent: true}).output.trim().split('\n').forEach(function (line) {
