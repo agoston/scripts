@@ -1,12 +1,18 @@
 *~
+
+# state files
 *.log
 *.num
+*.last
+*.out
 
 # stuff we don't share
 *_secret*
 
 # shit that has to be in $PATH
 chromedriver
+adb
+fastboot
 
 # stuff that is per-host
 sync_webplay.sh
