@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# bail on any error
+set -e
+
+if [ $# -lt 1 ]; then
+	echo "usage: $0 infile outfile [extra args for mencoder]"
+	exit 1
+fi
+
+OLD=`pwd`
+NAME="$1"
+INFILE="$OLD/$1"
+OUTFILE="$OLD/$2"
+shift 2
+
+# default-bol denoise filter
+ARGS="$@"
+
+### process filename info
+# rotation
+if [[ $NAME =~ '.90rot.' ]]; then
+	ARGS="$ARGS -vf-add rotate=1"
+elif [[ $NAME =~ '.-90rot.' ]]; then
+	ARGS="$ARGS -vf-add rotate=2"
+fi
+
+# noise
+if [[ $NAME =~ '.noise.' ]]; then
+	ARGS="$ARGS -vf-add hqdn3d"
+fi
+
+# create temporary dir
+DATE=`date +%Y-%m-%d`
+FILE=`tempfile`
+DIR=$FILE.$DATE
+mkdir -p $DIR
+cd $DIR
+
+# grab & encode video to raw h264
+if (( ${#ARGS} > 0 )); then
+	mencoder "$INFILE" $ARGS -quiet -ovc x264 -x264encopts "preset=veryslow:crf=21" -nosound -of rawvideo -o h264.raw
+else
+	mencoder "$INFILE" -quiet -ovc x264 -x264encopts "preset=veryslow:crf=21" -nosound -of rawvideo -o h264.raw
+fi
+
+# grab & convert audio to raw .wav
+mplayer "$INFILE" -quiet -vo null -vc dummy -ao pcm:file=pcm.wav
+
+# encode audio wav to mp3
+lame -m mono -q 0 -V 4 pcm.wav pcm.mp3
+
+# grab FPS of original video
+FPS=$(mplayer -quiet -frames 0 -vo null -ao null -identify "$INFILE" 2>/dev/null | grep '^ID_VIDEO_FPS' | awk -F'=' '{A=$2+0; print A}')
+
+# merge raw h264 video and encoded mp3 audio into an mkv container
+# the compression:none is needed as mplayer doesn't support compression of matroska headers (yet, after 6 years and counting...)
+mkvmerge -o out.mkv --compression 0:none --default-duration 0:${FPS}fps h264.raw --compression 0:none pcm.mp3
+
+# move to location
+mv out.mkv "$OUTFILE.$$"
+# protect against poweroff during moving encoded video in place
+mv "$OUTFILE.$$" "$OUTFILE"
+
+# clean up
+cd /
+rm -rf $DIR $FILE

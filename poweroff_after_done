@@ -1,0 +1,17 @@
+#!/bin/bash
+FILE=`tempfile`
+COUNT=0
+
+while true; do 
+	cat /proc/loadavg | tr -d "." >$FILE
+	read ACT REST <$FILE
+	if [ $ACT -lt 40 ]; then 
+		COUNT=$[COUNT+1]
+		if [ $COUNT -gt 300 ]; then
+			sudo poweroff
+		fi
+	else
+		COUNT=0
+	fi
+	sleep 1
+done

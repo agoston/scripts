@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ $# -lt 1 ]; then
+	echo "usage: $0 infile outfile [quality]"
+	echo "denoise is disabled by default, quality defaults to 20"
+	exit 1
+fi
+
+if [ $# -gt 2 ]; then
+	QUALITY=$3
+else
+	QUALITY=21
+fi
+
+OLD=`pwd`
+DATE=`date +%Y-%m-%d`
+FILE=`tempfile`
+DIR=$FILE.$DATE
+mkdir -p $DIR
+cd $DIR
+
+HandBrakeCLI -v -e x264 -q $QUALITY -x b-pyramid=1:no-fast-pskip=1:me=umh:analyse=all:b-adapt=2:trellis=2:ref=6:subq=10:merange=64:no-dct-decimate=1:bframes=5 -E vorbis -B 128 --strict-anamorphic -i "$OLD/$1" -o "$OLD/$2"
+
+cd -
+rm -rf $DIR $FILE

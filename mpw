@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# wrapper script around mplayer2. Goals:
+# wrapper script around original mplayer. Goals:
 # - detect ac3 sound and use hwac3 output (for amplifiers with ac3 over spdif support)
 # - same for dts
 # - transcode AAC to AC3 (my little amp has no aac support)
@@ -48,30 +48,38 @@ if ($pid) { # parent
 close MPINFO;
 #print Dumper \%info;
 
+my $width = $info{'ID_VIDEO_WIDTH'};
+my $height = $info{'ID_VIDEO_HEIGHT'};
+
 ### extract info from filename
 my $file = $ARGV[0];
 my @fn = split /\./, $file;
 my $fext = pop @fn;
 for (my $i = pop @fn; $i; $i = pop @fn) {
 	if ($i eq '90rot') {
-		push @cmdline, qw|--vf rotate=1|;
+		push @cmdline, qw|-vf-add rotate=1|;
 	} elsif ($i eq '-90rot') {
-		push @cmdline, qw|--vf rotate=2|;
+		push @cmdline, qw|-vf-add rotate=2|;
 	} elsif ($i =~ m/^(\d+)aspect$/) {
 		my $aspect = $1;
 		if ($fn[$#fn] =~ m/^\d+$/) {
 			$aspect = pop(@fn).':'.$aspect;
 		}
-		push @cmdline, '--aspect=' . $aspect;
-	} elsif ($i =~ m/^(-?\d+)avdelay$/) {
+		push @cmdline, '-aspect', $aspect;
+        } elsif ($i =~ m/^(-?\d+)avdelay$/) {
 		my $avdelay = $1;
 		if ($fn[$#fn] =~ m/^-?\d+$/) {
 			$avdelay = pop(@fn).'.'.$avdelay;
 		}
-		push @cmdline, '--delay=' . $avdelay;
+		push @cmdline, '-delay', $avdelay;
 	} elsif ($i =~ m/^(\d+)volume$/) {
 		my $volume = $1;
-		push @cmdline, '--af=volume='.$volume;
+		push @cmdline, '-af', 'volume='.$volume;
+	} elsif ($i eq 'halfsbs') {
+		push @cmdline, '-vf-add', 'crop='.($width/2).':'.$height.':0:0';
+		push @cmdline, '-vf-add', 'dsize='.($width).':'.$height;
+	} elsif ($i =~ m/^([a-z]{2,3})lang/) {
+		push @cmdline, '-slang', $1, '-alang', $1;
 	} else {
 		### when meeting an unknown element, continue
 		push @fn, $i;
@@ -94,33 +102,33 @@ while (<SUBSEARCH>) {
 			if ($sn[$#sn] =~ m/^\d+$/) {
 				$fps = pop(@sn).'.'.$fps;
 			}
-			push @cmdline, '--subfps=' . $fps;
+			push @cmdline, '-subfps', $fps;
 		} elsif ($i =~ /^(-?\d+)ofs$/) {
 			### previous tag is number? if yes, attach to this one
 			my $ofs = $1;
 			if ($sn[$#sn] =~ m/^-?\d+$/) {
 				$ofs = pop(@sn).'.'.$ofs;
 			}
-			push @cmdline, '--subdelay=' . $ofs;
+			push @cmdline, '-subdelay', $ofs;
 		} else {
 			### when meeting an unknown element, continue
 			next;
 		}
 	}
-	push @cmdline, '--sub=' . $_;
+	push @cmdline, '-sub', $_;
 	last; # ouch!
 }
 close(SUBSEARCH);
 
 ### full screen - always on for movies
-push @cmdline, '--fs';
+push @cmdline, '-fs';
 
 # lavdopts threads
-push @cmdline, qw|--lavdopts=threads=4|;
+push @cmdline, qw|-lavdopts threads=4|;
 
 # per host-specific stuff
 if ($hostname eq 'bruin') {
-	push @cmdline, qw|--vo=gl|;
+	push @cmdline, qw|-vo gl|;
 	$ENV{'ALSA_CARD'} = 'Audigy2';
 }
 
@@ -128,24 +136,22 @@ if ($hostname eq 'bruin') {
 if ($0 =~ /mpws$/) {
 	# hw ac3/dts decoding
 	if ($info{'ID_AUDIO_FORMAT'} eq '8192') {
-		push @cmdline, qw|--ac=hwac3|;
+		push @cmdline, qw|-ac hwac3|;
 	} elsif ($info{'ID_AUDIO_FORMAT'} eq '8193') {
-		push @cmdline, qw|--ac=hwdts|;
+		push @cmdline, qw|-ac hwdts|;
 	} elsif ($info{'ID_AUDIO_FORMAT'} eq 'MP4A') { # AAC
 		if ($info{'ID_AUDIO_NCH'} > 2) {
 			no warnings 'qw';
-			push @cmdline, qw|--ac=hwac3, --channels=6 --af=channels=6,lavcac3enc=1:640:3|;
+			push @cmdline, qw|-ac hwac3, -channels 6 -af channels=6,lavcac3enc=1:640:3|;
 		}
 	}
 }
 
 ### ratio setting
-my $width = $info{'ID_VIDEO_WIDTH'};
-my $height = $info{'ID_VIDEO_HEIGHT'};
 if (defined $width && defined $height && ($width > 0) && ($height > 0)) {
 	my $ratio = $width / $height;
 	if ($ratio > 16/10) {
-		push @cmdline, qw|--vf=expand=:::::16/10|;
+		push @cmdline, qw|-vf-add expand=:::::16/10|;
 	}
 }
 

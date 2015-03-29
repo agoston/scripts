@@ -1,0 +1,17 @@
+#!/bin/bash 
+
+THUMB_RES=240
+set -e
+
+# thumbnails conversion
+find -mindepth 1 -maxdepth 1 -type f | while read i; do 
+        ORIG_GEOMETRY=`identify "$i" | perl -ne '/.* (\d+x\d+) .*/; print $1;'`
+        ORIG_XRES=${ORIG_GEOMETRY/x*/}
+        ORIG_YRES=${ORIG_GEOMETRY/*x/}
+
+        if [ $ORIG_XRES -gt $THUMB_RES ] || [ $ORIG_YRES -gt $THUMB_RES ]; then
+		convert "$i" -thumbnail ${THUMB_RES}x${THUMB_RES} "${i}.jpg"
+		mv "$i" orig
+		mv "${i}.jpg" "${i%.*}.jpg"
+	fi
+done

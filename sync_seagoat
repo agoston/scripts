@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [[ `find ~/bin/sync_seagoat.last -mmin -720 | wc -l` -gt 0 ]]; then
+	exit 0
+fi
+
+# quit if source doesn't exist
+[[ ! -e /net/seagoat/home/ftp ]] && exit 0
+
+(
+TODAY=$(date +%Y%m%d)
+
+# windows jatekallasok
+tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 '/mnt/win/Users/Gazember/AppData/Roaming' '/mnt/win/Program Files (x86)/Steam/userdata'
+
+# pepperflash storage - peti flash jatekallasok
+tar cjf /net/seagoat/home/ftp/backup/bruin/pepperflash-${TODAY}.tar.bz2 '/home/us/.config/google-chrome/Default/Pepper Data/'
+
+# home
+rsync -avH --delete --ignore-errors /home/us/ /net/seagoat/home/ftp/backup/bruin/home/us/
+
+# webplay
+rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/www/webplay/ /var/www/webplay/
+
+# big bulk stuff
+rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,everyday_life,games,music,www} /mnt/backup/
+rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/backup/{cica,maci,seagoat,webplay} /mnt/backup/backup/
+
+# we don't run again within 24 hours
+touch ~/bin/sync_seagoat.last
+
+) &>~/bin/sync_seagoat.out

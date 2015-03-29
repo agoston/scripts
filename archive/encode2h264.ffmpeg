@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ $# -lt 1 ]; then
+	echo "usage: $0 infile outfile [quality]"
+	exit 1
+fi
+
+if [ $# -gt 2 ]; then
+	QUALITY=$3
+else
+	QUALITY=21
+fi
+
+OLD=`pwd`
+DATE=`date +%Y-%m-%d`
+FILE=`tempfile`
+DIR=$FILE.$DATE
+mkdir -p $DIR
+cd $DIR
+
+if ffmpeg -i "$OLD/$1" -acodec libvorbis -ab 128k -vcodec libx264 -vpre veryslow -crf $QUALITY -threads 0 "out.MKV"; then
+	mv out.MKV "$OLD/$2"
+fi
+
+cd -
+rm -rf $DIR $FILE
