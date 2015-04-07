@@ -22,9 +22,11 @@ rsync -avH --delete --ignore-errors /home/us/ /net/seagoat/home/ftp/backup/bruin
 # webplay
 rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/www/webplay/ /var/www/webplay/
 
-# big bulk stuff
+# backup seagoat
+cat ~/.encfs | encfs /mnt/backup.crypted /mnt/backup -i 5 -S
 rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,everyday_life,games,music,www} /mnt/backup/
 rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/backup/{cica,maci,seagoat,webplay} /mnt/backup/backup/
+fusermount -uz /mnt/backup
 
 # we don't run again within 24 hours
 touch ~/bin/sync_seagoat.last
