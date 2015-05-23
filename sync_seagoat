@@ -11,7 +11,7 @@ fi
 TODAY=$(date +%Y%m%d)
 
 # windows jatekallasok
-tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 '/mnt/win/Users/Gazember/AppData/Roaming' '/mnt/win/Program Files (x86)/Steam/userdata'
+tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 '/mnt/win/Users/Gazember/AppData/Roaming' '/mnt/win/Program Files (x86)/Steam/userdata' '/mnt/win/Users/Gazember/Documents'
 
 # pepperflash storage - peti flash jatekallasok
 tar cjf /net/seagoat/home/ftp/backup/bruin/pepperflash-${TODAY}.tar.bz2 '/home/us/.config/google-chrome/Default/Pepper Data/'
