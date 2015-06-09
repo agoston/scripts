@@ -21,19 +21,16 @@ export GIT_PS1_SHOWDIRTYSTATE=yes # show (*) unstaged (+) staged
 export GIT_PS1_SHOWUPSTREAM=auto # show when are ahead of behind
 export GIT_PS1_SHOWSTASHSTATE=auto
 
+__prompt_sign() {
+	if [[ "$UID" == "0" ]]; then echo "# "; else echo "$ "; fi
+}
+
 nogit() {
-	export PS1="\\033[33m\\033[1m\\033[\$(c_pwd)\[\033[0;36m\]\\033[0m\\033[38m\\033[0m\015\012"
+	export PS1="\\033[33m\\033[1m\\033[\$(c_pwd)\[\033[0;36m\]\\033[0m\\033[38m\\033[0m\015\012\$(__prompt_sign)"
 }
 
 yesgit() {
-	export PS1="\\033[33m\\033[1m\\033[\$(c_pwd)\[\033[0;36m\]\$(__git_ps1)\\033[0m\\033[38m\\033[0m\015\012"
+	export PS1="\\033[33m\\033[1m\\033[\$(c_pwd)\[\033[0;36m\]\$(__git_ps1)\\033[0m\\033[38m\\033[0m\015\012\$(__prompt_sign)"
 }
-
-if [ "$UID" = "0" ]
-then
-	PS1="${PS1}# "
-else
-	PS1="${PS1}$ "
-fi
 
 yesgit
