@@ -1,5 +1,6 @@
 alias mci="mvn clean install"
 alias gpr="git pull --rebase"
+alias gprr="for i in *; do pushd $i; git pull --rebase; popd; done"
 alias gs="git status"
 alias gc="git checkout"
 alias gcm="git checkout master"
