@@ -16,7 +16,7 @@ var client = xmlrpc.createSecureClient(config.client);
 
 client.methodCall('wp.getPosts', [0, config.wordpress.username, config.wordpress.password, {post_status: "pending"}], function (error, value) {
     console.log('getPosts result', value);
-    if (error != null) throw error;
+    if (error !== null) throw error;
 
     var tempDir = exec('mktemp -d', {silent: true}).output.trim();
     cd(tempDir);
@@ -38,11 +38,11 @@ client.methodCall('wp.getPosts', [0, config.wordpress.username, config.wordpress
         var newPost = {
             post_content: newContent.replace(/<\/a>\s*<a /ig, '</a><a '),
             post_status: 'publish'
-        }
+        };
 
         client.methodCall('wp.editPost', [0, config.wordpress.username, config.wordpress.password, post.post_id, newPost], function (error, value) {
             console.log('editPost result', value);
-            if (error != null) throw error;
+            if (error !== null) throw error;
         });
 
         console.log('newPost', newPost);
