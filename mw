@@ -127,6 +127,9 @@ close(SUBSEARCH);
 ### full screen - always on for movies
 push @cmdline, '--fs';
 
+### soft vol - mpv defaults to control the HW mixer for volume setting
+push @cmdline, '--softvol=yes';
+
 # per host-specific stuff
 #if ($hostname eq 'bruin') {
 #	push @cmdline, qw|--vo=gl|;
