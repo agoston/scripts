@@ -1,1 +1,2 @@
 alias top='top -o -cpu -s 2'
+alias v='cd /Volumes'
