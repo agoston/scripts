@@ -2,36 +2,50 @@
 
 DATE=`date +%y%m%d`
 
-# atnevez rendesen
-find -iregex '.*\.jpe?g$' -print0 | xargs -0 blog_pic_rename.sh 
-
-# beforgat
-find -iname '*.JPG' -exec exiftran -i -a {} \;
-
-# main
-ls -1 *.jpg 2>/dev/null | while read i
-do
+# TODO: use jpegoptim here
+img_rotate_resize() {
+	i=$1
+	
+	exiftran -i -a $i
+	
 	BIG=${i%%.jpg}_big.jpg
 	SMALL=${i%%.jpg}_small.jpg
 
-	# thumbnail+html eloallitasa
+	# create thumbnail
 	convert $i -quality 70 -thumbnail 320x240 $SMALL
-	GEOMETRY=`identify $SMALL | cut -d" " -f3`
-	XRES=${GEOMETRY/x*/}
-	YRES=${GEOMETRY/*x/}
-	echo -n '<a class="fancybox-thumb" rel="fancybox-thumb" href="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$BIG'"><IMG CLASS=smallImage WIDTH='$((XRES/2))' HEIGHT='$((YRES/2))' SRC="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$SMALL'" TITLE="..."></a>'
 
-	# nagykep eloallitasa - csak akkor meretezunk, ha eleg nagy, kulonben hagyjuk az eredeti meretet
+	# create big pic - but only if it would be downsizes
 	ORIG_GEOMETRY=`identify $i | cut -d" " -f3`
 	ORIG_XRES=${ORIG_GEOMETRY/x*/}
 	ORIG_YRES=${ORIG_GEOMETRY/*x/}
 	if [ $ORIG_XRES -gt 3200 ] || [ $ORIG_YRES -gt 3200 ]; then
 		convert $i -resize 3200x3200 $BIG
 	else
-		# still convert to reduce size
+		# still run convert to reduce size
 		convert $i $BIG
 	fi
+}
+export -f img_rotate_resize
+
+# rename all jpegs
+find -iregex '.*\.jpe?g$' -print0 | xargs -0 blog_pic_rename.sh 
+
+# parallel rotate & resize
+find . -name '*.jpg' | parallel img_rotate_resize
+
+# main
+ls -1 *_small.jpg 2>/dev/null | while read SMALL
+do
+	BIG=${i%%_small.jpg}_big.jpg
+
+	# generate html
+	GEOMETRY=`identify $SMALL | cut -d" " -f3`
+	XRES=${GEOMETRY/x*/}
+	YRES=${GEOMETRY/*x/}
+	echo -n '<a class="fancybox-thumb" rel="fancybox-thumb" href="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$BIG'"><IMG CLASS=smallImage WIDTH='$((XRES/2))' HEIGHT='$((YRES/2))' SRC="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$SMALL'" TITLE="..."></a>'
 done
+
+exit 0
 
 set -e
 DESTDIR=/net/seagoat/home/ftp/www/pictures/blog/$DATE

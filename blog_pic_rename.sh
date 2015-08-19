@@ -1,4 +1,5 @@
 #!/bin/bash
+# not thread safe!
 
 for i in "$@"; do
 	NEWNAME=$(exiftime "$i" | tr ':' ' ' | gawk '{printf("img_%s%s%s_%s%s%s.jpg", $3, $4, $5, $6, $7, $8); exit}')
