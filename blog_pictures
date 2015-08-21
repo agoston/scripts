@@ -45,8 +45,6 @@ do
 	echo -n '<a class="fancybox-thumb" rel="fancybox-thumb" href="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$BIG'"><IMG CLASS=smallImage WIDTH='$((XRES/2))' HEIGHT='$((YRES/2))' SRC="http://seagoat.xs4all.nl/pictures/blog/'$DATE/$SMALL'" TITLE="..."></a>'
 done
 
-exit 0
-
 set -e
 DESTDIR=/net/seagoat/home/ftp/www/pictures/blog/$DATE
 mkdir -p $DESTDIR 2>/dev/null
