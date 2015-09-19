@@ -36,7 +36,7 @@ find . -name '*.jpg' | parallel img_rotate_resize
 # main
 ls -1 *_small.jpg 2>/dev/null | while read SMALL
 do
-	BIG=${i%%_small.jpg}_big.jpg
+	BIG=${SMALL%%_small.jpg}_big.jpg
 
 	# generate html
 	GEOMETRY=`identify $SMALL | cut -d" " -f3`
