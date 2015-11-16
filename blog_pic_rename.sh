@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # not thread safe!
 
 for i in "$@"; do
