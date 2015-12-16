@@ -1,2 +1,3 @@
 alias top='top -o -cpu -s 2'
 alias v='cd /Volumes'
+alias xpoo='rm -rf .Spotlight-V100/ .Trashes/ ._.Trashes .fseventsd/'
