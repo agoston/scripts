@@ -1,5 +1,6 @@
 alias mcip="mvn clean install -DforkCount=0.5C"
 alias mci="mvn clean install"
+alias mi="mvn install"
 alias gpr="git pull --rebase"
 alias gprr='find . -type d -name .git | parallel "pushd {.}; git pull --rebase; popd"'
 alias gs="git status"
