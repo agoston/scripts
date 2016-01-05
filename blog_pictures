@@ -28,10 +28,10 @@ img_rotate_resize() {
 export -f img_rotate_resize
 
 # rename all jpegs
-find -iregex '.*\.jpe?g$' -print0 | xargs -0 blog_pic_rename.sh 
+find -maxdepth 1 -iregex '.*\.jpe?g$' -print0 | xargs -0 blog_pic_rename.sh 
 
 # parallel rotate & resize
-find . -name '*.jpg' | parallel img_rotate_resize
+ls -1 '*.jpg' | parallel img_rotate_resize
 
 # main
 ls -1 *_small.jpg 2>/dev/null | while read SMALL

@@ -22,7 +22,7 @@ rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/www/webplay/ /var/www/
 
 # backup seagoat
 cat ~/.encfs | encfs /mnt/backup.crypted /mnt/backup -i 5 -S
-rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,everyday_life,games,music,www} /mnt/backup/
+rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,apps,everyday_life,games,music,www} /mnt/backup/
 rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/backup/{cica,maci,seagoat,webplay} /mnt/backup/backup/
 fusermount -uz /mnt/backup
 
