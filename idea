@@ -1,0 +1,1 @@
+exec "/Applications/IntelliJ IDEA 15.app/Contents/MacOS/idea" "$PWD/$*"
