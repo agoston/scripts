@@ -13,6 +13,7 @@
 chromedriver
 adb
 fastboot
+jmxterm-1.0.0-SNAPSHOT-uber.jar
 
 # stuff that is per-host
 sync_webplay.sh

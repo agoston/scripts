@@ -1,0 +1,2 @@
+#!/bin/sh
+exec java -jar $(dirname $0)/jmxterm-1.0.0-SNAPSHOT-uber.jar "$@"
