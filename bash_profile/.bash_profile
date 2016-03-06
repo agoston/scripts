@@ -1,7 +1,7 @@
 . ~/.bashrc
 
 if ! echo $PATH | grep ~/bin &>/dev/null; then
-	export PATH=~/bin:$PATH:.
+	export PATH=~/bin:$PATH:/opt/local/bin:/opt/local/sbin:.
 fi
 
 shopt -s checkwinsize no_empty_cmd_completion
