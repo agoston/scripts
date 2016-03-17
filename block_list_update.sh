@@ -4,7 +4,7 @@ FILE=$(tempfile)
 
 grep -A9999 '^##DATA' $0 | egrep -v '^#|^$' | while read i; do
 	wget -O- "$i" | gunzip >>$FILE
-done
+done >$0.log
 
 gzip -c $FILE >/home/ftp/www/blocklist.gz
 rm -f $FILE
