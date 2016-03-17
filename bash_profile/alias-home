@@ -1,2 +1,3 @@
 alias b="ssh bruin"
 alias s="cd /net/seagoat/home/ftp"
+alias qiv="qiv -ftiR"
