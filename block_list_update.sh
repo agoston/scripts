@@ -1,12 +1,21 @@
 #!/bin/bash
 
+DEST=/home/ftp/www/blocklist.gz
 FILE=$(tempfile)
 
 grep -A9999 '^##DATA' $0 | egrep -v '^#|^$' | while read i; do
 	wget -O- "$i" | gunzip >>$FILE
 done
 
-gzip -c $FILE >/home/ftp/www/blocklist.gz
+OLDLINES=$(zcat $DEST | wc -l)
+NEWLINES=$(cat $FILE | wc -l)
+
+if [[ $NEWLINES -lt $((OLDLINES*9/10)) ]]; then
+	echo FAILED; $NEWLINES new lines vs. $OLDLINES old lines 
+	exit 1
+fi
+
+gzip -c $FILE >$DEST
 rm -f $FILE
 
 exit 0
