@@ -6,4 +6,9 @@ alias gprr='find . -type d -name .git | parallel "pushd {.}; git pull --rebase; 
 alias gs="git status"
 alias gc="git checkout"
 alias gcm="git checkout master"
+
+rest() {
+	curl -H 'Accept: application/json' "$@" | formatjson | less
+}
+
 export GOPATH=~/go
