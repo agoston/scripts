@@ -1,10 +1,20 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # kindle fire 5th gen
 XRES=1024
 YRES=600
 
-exec ffmpeg -i "$1" -vf scale="'if(gt(a,${XRES}/${YRES}),if(gt(ih,${XRES}),${XRES},-1),-1)':'if(gt(a,${XRES}/${YRES}),-1,if(gt(iw,${YRES}),${YRES},-1))'" -c:v libvpx-vp9 -b:v 1500K -g 80 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libopus -b:a 64k -f webm "${1%.*}.webm"
+IFS=$'='
+while read i j; do
+	if [[ $i == 'width' ]]; then WIDTH=$j; fi
+	if [[ $i == 'height' ]]; then HEIGHT=$j; fi
+done < <(mpv_identify.sh "$1")
+
+#if [[ $WIDTH -gt $XRES ]]; then HEIGHT=$XRES; fi
+if [[ $HEIGHT -gt $YRES ]]; then HEIGHT=$YRES; fi
+
+set -x
+exec ffmpeg -i "$1" -vf scale="-1:${HEIGHT}" -c:v libvpx-vp9 -b:v 1500K -g 80 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libopus -b:a 64k -f webm "${1%.*}.webm"
 
 exit 0
 
