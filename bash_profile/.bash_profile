@@ -11,3 +11,4 @@ export EDITOR=joe
 export PAGER=less
 export LESS=-SfR
 export ignoreeof=0
+export XZ_DEFAULTS="-9 -T 0"
