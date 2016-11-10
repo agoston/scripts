@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/bash -x
 
-PLAYER=echo
+PLAYER=mw
 
-LIST=.${0}.list
+LIST=.$(basename $0).list
 
 if ! [[ -s $LIST ]]; then
 	find -type f -iregex '.*\.\(mkv\|mp4\|avi\)' | sort -R >$LIST
