@@ -11,7 +11,7 @@ OLDLINES=$(zcat $DEST | wc -l)
 NEWLINES=$(cat $FILE | wc -l)
 
 if [[ $NEWLINES -lt $((OLDLINES*9/10)) ]]; then
-	echo FAILED; $NEWLINES new lines vs. $OLDLINES old lines 
+	echo "FAILED; $NEWLINES new lines vs. $OLDLINES old lines"
 	exit 1
 fi
 
