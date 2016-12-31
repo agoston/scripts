@@ -9,7 +9,9 @@
 TODAY=$(date +%Y%m%d)
 
 # windows jatekallasok
-tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 '/mnt/win/Users/Gazember/AppData/Roaming' '/mnt/win/Program Files (x86)/Steam/userdata' '/mnt/win/Users/Gazember/Documents'
+if mountpoint /mnt/win; then
+	tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 '/mnt/win/Users/Gazember/AppData/Roaming' '/mnt/win/Program Files (x86)/Steam/userdata' '/mnt/win/Users/Gazember/Documents'
+fi
 
 # pepperflash storage - peti flash jatekallasok
 tar cjf /net/seagoat/home/ftp/backup/bruin/pepperflash-${TODAY}.tar.bz2 '/home/us/.config/google-chrome/Default/Pepper Data/'
@@ -21,10 +23,12 @@ rsync -avH --delete --ignore-errors /home/us/ /net/seagoat/home/ftp/backup/bruin
 rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/www/webplay/ /var/www/webplay/
 
 # backup seagoat
-cat ~/.encfs | encfs /mnt/backup.crypted /mnt/backup -i 5 -S
-rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,apps,everyday_life,games,music,www} /mnt/backup/
-rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/backup/{cica,maci,seagoat,webplay} /mnt/backup/backup/
-fusermount -uz /mnt/backup
+if mountpoint /mnt/backup.crypted; then
+	cat ~/.encfs | encfs /mnt/backup.crypted /mnt/backup -i 5 -S
+	rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,apps,everyday_life,games,music,www} /mnt/backup/
+	rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/backup/{cica,maci,seagoat,webplay} /mnt/backup/backup/
+	fusermount -uz /mnt/backup
+fi
 
 # we don't run again within 24 hours
 touch ~/bin/sync_seagoat.last
