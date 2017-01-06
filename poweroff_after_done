@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if [[ $UID -ne 0 ]]; then
+	echo 'need sudo access, dude'
+	exec sudo $0
+fi
+
 FILE=`tempfile`
 COUNT=0
 
