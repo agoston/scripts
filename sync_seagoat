@@ -2,15 +2,20 @@
 
 [[ `find ~/bin/sync_seagoat.last -mmin -720 | wc -l` -gt 0 ]] && exit 0
 
-# quit if source doesn't exist
-[[ ! -e /net/seagoat/home/ftp ]] && exit 0
+# quit if src/dst doesn't exist
+[[ ! mountpoint /net/seagoat/home/ftp ]] && exit 0
 
 (
 TODAY=$(date +%Y%m%d)
 
 # windows jatekallasok
 if mountpoint /mnt/win; then
-	tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 '/mnt/win/Users/Gazember/AppData/Roaming' '/mnt/win/Program Files (x86)/Steam/userdata' '/mnt/win/Users/Gazember/Documents'
+	# na ez egy furi dolog. $HOME/Saved Games tokures, viszont van jatekallas mindenhol szanaszejjel.
+	tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 \
+	'/mnt/win10/Users/gazember/AppData/Roaming' \
+	'/mnt/win10/Program Files (x86)/Steam/userdata' \
+	'/mnt/win10/Users/gazember/Documents' \
+	'/mnt/win10/Users/gazember/cc_save.dat'
 fi
 
 # pepperflash storage - peti flash jatekallasok
