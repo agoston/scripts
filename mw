@@ -81,6 +81,7 @@ for (my $i = pop @fn; $i; $i = pop @fn) {
         } elsif ($i eq 'halfsbs') {
                 push @cmdline, '--vf-add=crop='.($width/2).':'.$height.':0:0';
                 push @cmdline, '--vf-add=dsize='.($width).':'.$height;
+                $width = $width / 2;
         } elsif ($i =~ m/^([a-z]{2,3})lang/) {
                 push @cmdline, '--slang', $1, '--alang', $1;
 	} else {
