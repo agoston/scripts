@@ -10,6 +10,14 @@ cd $FAMILY_DIR
 IFS=$'\n'
 for i in $(perl -ale 'if (/.* movie-file="([^.].*?)".*/) {print $1}' <$WEBPLAY); do
 	NEW="${i%.*}.webm"
+	
+	# check if mtime between 1-14 days and no duration
+	if [ $(find . -maxdepth 1 -type f -name "$NEW" -mmin +120 -mtime -14) ]; then
+		if ffprobe -show_format "$NEW" 2>/dev/null | grep -q 'duration=N/A'; then
+			rm "$NEW"
+		fi
+	fi
+	
 	if ! [[ -e "$NEW" ]]; then
 		# check for hard link & continue outer cycle if found
 		while read SAMEFILE; do
