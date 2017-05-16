@@ -5,8 +5,9 @@
 # quit if src/dst doesn't exist
 mountpoint /net/seagoat/home/ftp || exit 0
 
-(
 TODAY=$(date +%Y%m%d)
+
+(
 
 # windows jatekallasok
 if mountpoint /mnt/win10; then
@@ -16,7 +17,7 @@ if mountpoint /mnt/win10; then
 	'/mnt/win8/Program Files (x86)/Steam/userdata'
 	'/mnt/win10/Program Files (x86)/Steam/userdata' \
 	'/mnt/win10/Users/gazember/Documents' \
-	'/mnt/win10/Users/gazember/cc_save.dat' \
+	'/mnt/win10/Users/gazember/cc_save.dat'
 fi
 
 # pepperflash storage - peti flash jatekallasok
