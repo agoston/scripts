@@ -13,7 +13,7 @@
 #
 # Some extras (commented out but could come handy):
 # - taskset 0x4, so that mplayer always runs on the same core (workaround for already fixed bug)
-# - swgov to set governor to performance and avoid ondemand's contast scalebacks in some cases (workaround for already fixed bug)
+# - swgov to set governor to performance and avoid ondemand's scalebacks in some cases (workaround for already fixed bug)
 # - iecset, to switch spdif port back to digital (workaround for already fixed bug)
 # - set environment for audio output for ALSA
 # - set -vo gl
@@ -21,6 +21,7 @@
 
 use warnings;
 use strict;
+no warnings 'qw';
 
 use Data::Dumper;
 
@@ -95,7 +96,7 @@ for (my $i = pop @fn; $i; $i = pop @fn) {
 
 ### find corresponding subtitles
 $file = join('.', @fn);
-open(SUBSEARCH, 'ls -1 \''.$file.'\'.*sub \''.$file.'\'.*srt 2>/dev/null |');  # for some reason, *{sub,srt} did not work (only in perl 5.8.9)
+open(SUBSEARCH, '-|', 'find', '.', '-maxdepth', '1', '-name', $file.'.*sub', '-o', '-name', $file.'.*srt');
 while (<SUBSEARCH>) {
 	chomp;
 	my @sn = split /\./;
@@ -128,27 +129,21 @@ close(SUBSEARCH);
 ### full screen - always on for movies
 push @cmdline, '--fs';
 
-### soft vol - mpv defaults to control the HW mixer for volume setting
-push @cmdline, '--softvol=yes';
-
 # per host-specific stuff
 #if ($hostname eq 'bruin') {
 #	push @cmdline, qw|--vo=gl|;
 #	$ENV{'ALSA_CARD'} = 'Audigy2';
 #}
 
-### csak ha mpws-kent van inditva
+### if started as surround player
 if ($0 =~ /mws$/) {
 	# hw ac3/dts decoding
-	if ($info{'audio_format'} eq 'ac3') {
-		push @cmdline, qw|--ad=spdif:ac3|;
-	} elsif ($info{'audio_format'} eq 'dts') {
-		push @cmdline, qw|--ad=spdif:dts|;
-	} elsif ($info{'audio_format'} eq 'aac') {
-		if ($info{'channels'} > 2) {
-			no warnings 'qw';
-			push @cmdline, qw|--ad=spdif:ac3, --channels=6 --af-add=channels=6,lavcac3enc=1:640:3|;
-		}
+	if ($info{'audio_codec'} =~ /ac3/i) {
+		push @cmdline, qw|--audio-spdif=ac3,dts|;
+	} elsif ($info{'audio_codec'} =~ /dts/i) {
+		push @cmdline, qw|--audio-spdif=ac3,dts|;
+	} elsif ($info{'audio_codec'} =~ /aac/i) {
+		push @cmdline, qw|--audio-spdif=ac3,dts --channels=6 --af-add=channels=6,lavcac3enc=1:640:3|;
 	}
 }
 
