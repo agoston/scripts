@@ -1,3 +1,6 @@
+#!/bin/false
+# no need for this anymore
+
 #!/usr/bin/perl
 # wrapper script around original mplayer. Goals:
 # - detect ac3 sound and use hwac3 output (for amplifiers with ac3 over spdif support)

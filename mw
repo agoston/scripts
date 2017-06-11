@@ -148,12 +148,13 @@ if ($0 =~ /mws$/) {
 }
 
 ### ratio setting
-if (defined $width && defined $height && ($width > 0) && ($height > 0)) {
-	my $ratio = $width / $height;
-	if ($ratio > 16/10) {
-		push @cmdline, qw|--vf-add=expand=::::16/10:1|;
-	}
-}
+### DEPRECATED, no need since mpv 0.25
+#if (defined $width && defined $height && ($width > 0) && ($height > 0)) {
+#	my $ratio = $width / $height;
+#	if ($ratio > 16/10) {
+#		push @cmdline, qw|--vf-add=expand=::::16/10:1|;
+#	}
+#}
 
 ### extra args passed on cmdline
 push @cmdline, @ARGV[0..$#ARGV];
