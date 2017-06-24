@@ -139,10 +139,13 @@ push @cmdline, '--fs';
 if ($0 =~ /mws$/) {
 	# hw ac3/dts decoding
 	if ($info{'audio_codec'} =~ /ac3/i) {
+ 		push @cmdline, qw|--audio-device=alsa/iec958:CARD=Audigy2,DEV=0|;
 		push @cmdline, qw|--audio-spdif=ac3,dts|;
 	} elsif ($info{'audio_codec'} =~ /dts/i) {
+ 		push @cmdline, qw|--audio-device=alsa/iec958:CARD=Audigy2,DEV=0|;
 		push @cmdline, qw|--audio-spdif=ac3,dts|;
 	} elsif ($info{'audio_codec'} =~ /aac/i) {
+ 		push @cmdline, qw|--audio-device=alsa/iec958:CARD=Audigy2,DEV=0|;
 		push @cmdline, qw|--audio-spdif=ac3,dts --channels=6 --af-add=channels=6,lavcac3enc=1:640:3|;
 	}
 }
