@@ -2,6 +2,6 @@
 ls -1 | while read i; do
 	j="${i,,}"
 	if [ "$i" != "$j" ]; then
-		mv -v "$i" "$j"
+		mv -v -n "$i" "$j"
 	fi
 done
