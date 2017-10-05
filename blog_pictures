@@ -6,7 +6,8 @@ DATE=`date +%y%m%d`
 img_rotate_resize() {
 	i=$1
 	
-	exiftran -i -a $i
+	jpegtran $i >$i.jpegtran
+	mv $i.jpegtran $i
 	
 	BIG=${i%%.jpg}_big.jpg
 	SMALL=${i%%.jpg}_small.jpg
@@ -28,7 +29,7 @@ img_rotate_resize() {
 export -f img_rotate_resize
 
 # rename all jpegs
-find -maxdepth 1 -iregex '.*\.jpe?g$' -print0 | xargs -0 blog_pic_rename.sh 
+# not necessary - already well named #find -maxdepth 1 -iregex '.*\.jpe?g$' -print0 | xargs -0 blog_pic_rename.sh 
 
 # parallel rotate & resize
 ls -1 *.jpg | parallel img_rotate_resize
