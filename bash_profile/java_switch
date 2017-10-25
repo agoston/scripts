@@ -17,3 +17,4 @@ function switch_java() {
 alias j6='switch_java 1.6'
 alias j7='switch_java 1.7'
 alias j8='switch_java 1.8'
+alias j9='switch_java 9'
