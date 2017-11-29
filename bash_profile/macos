@@ -2,5 +2,3 @@ export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export LC_ALL=en_US.UTF-8  
 export LANG=en_US.UTF-8
 export LC_COLLATE="C"
-
-alias tm='timidity -s 44 -p 64 -a -C 1'

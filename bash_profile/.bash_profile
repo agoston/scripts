@@ -11,4 +11,6 @@ export EDITOR=joe
 export PAGER=less
 export LESS=-SfR
 export ignoreeof=0
-export XZ_DEFAULTS="-9 -T 0"
+
+# atm j9 has a lot of troubles, do not make it default
+switch_java 1.8
