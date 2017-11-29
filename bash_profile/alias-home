@@ -1,3 +1,4 @@
 alias b="ssh bruin"
 alias s="cd /net/seagoat/home/ftp"
 alias qiv="qiv -ftiR"
+alias tm="timidity -s 44 -p 64 -int -a -C 1"
