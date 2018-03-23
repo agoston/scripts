@@ -2,6 +2,10 @@
 # thread-safe!
 # supports hard links!
 
+function movie_duration() {
+	ffprobe -show_format "$1" | gawk -F '[=.]' '/^duration=/ {printf("%s\n", $2);}' 2>/dev/null
+}
+
 FAMILY_DIR=/net/seagoat/home/ftp/video
 WEBPLAY=/net/seagoat/home/ftp/www/webplay/index.html
 
@@ -11,10 +15,12 @@ IFS=$'\n'
 for i in $(perl -ale 'if (/.* movie-file="([^.].*?)".*/) {print $1}' <$WEBPLAY); do
 	NEW="${i%.*}.webm"
 	
-	# check if mtime between 1-14 days and no duration
-	# FIXME: latest ffmpeg fills duration, compare if much shorter too!
-	if [ $(find . -maxdepth 1 -type f -wholename "$NEW" -mmin +120 -mtime -14) ]; then
-		if ffprobe -show_format "$NEW" 2>/dev/null | grep -q 'duration=N/A'; then
+	# check if mtime between 1-14 days and shorter duration
+	if [ $(find . -type f -path "*/$NEW" -mmin +120 -mtime -14) ]; then
+		ORIG_DURATION=$(movie_duration "$i")
+		NEW_DURATION=$(movie_duration "$NEW")
+		
+		if [[ $((ORIG_DURATION-NEW_DURATION)) -gt 30 ]]; then
 			rm "$NEW"
 		fi
 	fi
@@ -30,6 +36,6 @@ for i in $(perl -ale 'if (/.* movie-file="([^.].*?)".*/) {print $1}' <$WEBPLAY);
 		done < <(find -samefile "$i" -a '!' -wholename "$i")
 		
 		# no hard link, go encode
-		echo encode_low_res.sh "$i"
+		encode_low_res.sh "$i"
 	fi
 done

@@ -1,20 +1,21 @@
 #!/bin/bash
 
 # kindle fire 5th gen
-XRES=1024
 YRES=600
+HEIGHT=$(ffprobe -show_streams "$1" | gawk -F '[=.]' '/^height=/ {printf("%s\n", $2);}')
 
-IFS=$'='
-while read i j; do
-	if [[ $i == 'width' ]]; then WIDTH=$j; fi
-	if [[ $i == 'height' ]]; then HEIGHT=$j; fi
-done < <(mpv_identify.sh "$1")
+if [[ $HEIGHT -gt $YRES ]]; then 
+	VF_OPT="-vf scale=-1:${HEIGHT}"
+fi
 
-#if [[ $WIDTH -gt $XRES ]]; then HEIGHT=$XRES; fi
-if [[ $HEIGHT -gt $YRES ]]; then HEIGHT=$YRES; fi
+BITRATE=$(ffprobe -show_streams "$1" | gawk -F '[=.]' '/^bit_rate=/ {printf("%s\n", $2);}' | sort -nr | head -1)
+if [[ $BITRATE -lt 2000000 ]]; then
+	BITRATE=$[BITRATE*3/4]
+fi
+BR_OPT="-c:v libvpx-vp9 -b:v $BITRATE -quality good -speed 1 -g 96 -tile-columns 1 -threads 4 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25"
 
 set -x
-exec ffmpeg -i "$1" -vf scale="-1:${HEIGHT}" -c:v libvpx-vp9 -b:v 1500K -g 80 -tile-columns 6 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -c:a libopus -b:a 64k -f webm "${1%.*}.webm"
+exec ffmpeg -i "$1" $VF_OPT $BR_OPT -c:a libopus -b:a 96k -f webm "${1%.*}.webm"
 
 exit 0
 
