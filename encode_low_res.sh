@@ -1,6 +1,6 @@
 #!/bin/bash
 C_YRES=600
-C_BITRATE=2000000
+C_BITRATE=1800000
 
 HEIGHT=$(ffprobe -loglevel 16 -show_streams -select_streams v:0 "$1" | gawk -F '[=.]' '/^height=/ {printf("%s\n", $2);}' | sed 's/N\/A//')
 
@@ -9,7 +9,7 @@ if [[ ${HEIGHT:-$C_YRES} -ge $C_YRES ]]; then
 fi
 
 BITRATE=$(ffprobe -loglevel 16 -show_format "$1" | gawk -F '[=.]' '/^bit_rate=/ {printf("%s\n", $2);}' | sed 's/N\/A//')
-if [[ ${BITRATE:-2000000} -le 2000000 ]]; then
+if [[ ${BITRATE:-$C_BITRATE} -le $C_BITRATE ]]; then
 	BITRATE=$[BITRATE*3/4]
 else
 	BITRATE=$C_BITRATE
@@ -17,7 +17,7 @@ fi
 BR_OPT="-c:v libvpx-vp9 -b:v $BITRATE -quality good -speed 1 -g 96 -tile-columns 1 -threads 4 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25"
 
 set -x
-exec ffmpeg -i "$1" $VF_OPT $BR_OPT -c:a libopus -b:a 96k -f webm "${1%.*}.webm"
+exec ffmpeg -i "$1" $VF_OPT $BR_OPT -ac 1 -c:a libopus -b:a 96k -f webm "${1%.*}.webm"
 
 exit 0
 
