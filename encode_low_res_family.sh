@@ -3,7 +3,7 @@
 # supports hard links!
 
 function movie_duration() {
-	ffprobe -show_format "$1" | gawk -F '[=.]' '/^duration=/ {printf("%s\n", $2);}' 2>/dev/null
+	ffprobe -show_format "$1" 2>/dev/null | gawk -F '[=.]' '/^duration=/ {printf("%s\n", $2);}' 2>/dev/null | sed 's/N\/A/0/'
 }
 
 FAMILY_DIR=/net/seagoat/home/ftp/video
