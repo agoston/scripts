@@ -3,7 +3,7 @@
 # supports hard links!
 
 function movie_duration() {
-	ffprobe -show_format "$1" 2>/dev/null | gawk -F '[=.]' '/^duration=/ {printf("%s\n", $2);}' 2>/dev/null | sed 's/N\/A/0/'
+	ffprobe -loglevel 16 -show_format "$1" | gawk -F '[=.]' '/^duration=/ {printf("%s\n", $2);}' | sed 's/N\/A/0/'
 }
 
 FAMILY_DIR=/net/seagoat/home/ftp/video
@@ -16,11 +16,11 @@ for i in $(perl -ale 'if (/.* movie-file="([^.].*?)".*/) {print $1}' <$WEBPLAY);
 	NEW="${i%.*}.webm"
 	
 	# check if mtime between 1-14 days and shorter duration
-	if [ $(find . -type f -path "*/$NEW" -mmin +120 -mtime -14) ]; then
+	if [ $(find . -type f -path "*/$NEW" -mmin +5 -mtime -14) ]; then
 		ORIG_DURATION=$(movie_duration "$i")
 		NEW_DURATION=$(movie_duration "$NEW")
 		
-		if [[ $((ORIG_DURATION-NEW_DURATION)) -gt 30 ]]; then
+		if [[ ${ORIG_DURATION:-0} -gt 0 ]] && [[ $((ORIG_DURATION-NEW_DURATION)) -gt 30 ]]; then
 			rm "$NEW"
 		fi
 	fi
