@@ -1,0 +1,3 @@
+#!/bin/bash
+nvidia-fancontrol.sh
+sudo -u miner /home/miner/ethminer-0.13/miner.sh

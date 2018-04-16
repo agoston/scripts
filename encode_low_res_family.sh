@@ -27,6 +27,7 @@ for i in $(perl -ale 'if (/.* movie-file="([^.].*?)".*/) {print $1}' <$WEBPLAY);
 	
 	if ! [[ -e "$NEW" ]]; then
 		# check for hard link & continue outer cycle if found
+		# FIXME: didn't check if other file's duration is OK -- this would happily hardlink a half-baked file
 		while read SAMEFILE; do
 			SAMENEW="${SAMEFILE%.*}.webm";
 			if [[ -e "$SAMENEW" ]]; then
