@@ -1,8 +1,8 @@
 #!/bin/bash
 
 TODAY=$(date +%m%d)
-OFF=$(gawk "/^${TODAY} / {print \$2}" <$0)
-ON=$(gawk "/^${TODAY} / {print \$4}" <$0)
+OFF=$(gawk "/^${TODAY} / {print \$2}" <$BASH_SOURCE)
+ON=$(gawk "/^${TODAY} / {print \$4}" <$BASH_SOURCE)
 
 # swallows at's stderr, but no other way to silence it for cron
 echo "~/bin/fs20_send.sh 1 off" | at $OFF 2>/dev/null
