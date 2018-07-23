@@ -17,7 +17,8 @@ if mountpoint /mnt/win10; then
 	'/mnt/win8/Program Files (x86)/Steam/userdata' \
 	'/mnt/win10/Program Files (x86)/Steam/userdata' \
 	'/mnt/win10/Users/gazember/Documents' \
-	'/mnt/win10/Users/gazember/cc_save.dat'
+	'/mnt/win10/Users/gazember/cc_save.dat' \
+	--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*'
 fi
 
 # pepperflash storage - peti flash jatekallasok
