@@ -3,7 +3,7 @@
 [[ `find ~/bin/sync_seagoat.last -mmin -720 | wc -l` -gt 0 ]] && exit 0
 
 # quit if src/dst doesn't exist
-mountpoint /net/seagoat/home/ftp || exit 0
+mountpoint -q /net/seagoat/home/ftp || exit 0
 
 TODAY=$(date +%Y%m%d)
 
