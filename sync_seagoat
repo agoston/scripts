@@ -13,7 +13,7 @@ TODAY=$(date +%Y%m%d)
 if mountpoint /mnt/win10; then
 	# na ez egy furi dolog. $HOME/Saved Games tokures, viszont van jatekallas mindenhol szanaszejjel.
 	tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 \
-	#--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*'
+	--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*'
 	'/mnt/win10/Users/gazember/AppData/Roaming' \
 	'/mnt/win8/Program Files (x86)/Steam/userdata' \
 	'/mnt/win10/Program Files (x86)/Steam/userdata' \
@@ -22,7 +22,7 @@ if mountpoint /mnt/win10; then
 fi
 
 # pepperflash storage - peti flash jatekallasok
-tar cjf /net/seagoat/home/ftp/backup/bruin/pepperflash-${TODAY}.tar.bz2 '/home/us/.config/google-chrome/Default/Pepper Data/'
+#tar cjf /net/seagoat/home/ftp/backup/bruin/pepperflash-${TODAY}.tar.bz2 '/home/us/.config/google-chrome/Default/Pepper Data/'
 
 # home
 rsync -avH --delete --ignore-errors /home/us/ /net/seagoat/home/ftp/backup/bruin/home/us/
