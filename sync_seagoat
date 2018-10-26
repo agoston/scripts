@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 [[ `find ~/bin/sync_seagoat.last -mmin -720 | wc -l` -gt 0 ]] && exit 0
 
@@ -10,10 +10,10 @@ TODAY=$(date +%Y%m%d)
 (
 
 # windows jatekallasok
-if mountpoint /mnt/win10; then
+if mountpoint -q /mnt/win10; then
 	# na ez egy furi dolog. $HOME/Saved Games tokures, viszont van jatekallas mindenhol szanaszejjel.
 	tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 \
-	--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*'
+	--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*' \
 	'/mnt/win10/Users/gazember/AppData/Roaming' \
 	'/mnt/win8/Program Files (x86)/Steam/userdata' \
 	'/mnt/win10/Program Files (x86)/Steam/userdata' \
@@ -31,7 +31,7 @@ rsync -avH --delete --ignore-errors /home/us/ /net/seagoat/home/ftp/backup/bruin
 rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/www/webplay/ /var/www/webplay/
 
 # backup seagoat
-if mountpoint /mnt/backup.crypted; then
+if mountpoint -q /mnt/backup.crypted; then
 	cat ~/.encfs | encfs /mnt/backup.crypted /mnt/backup -i 5 -S
 	rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,apps,everyday_life,games,music,www} /mnt/backup/
 	rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/backup/{cica,maci,seagoat,webplay} /mnt/backup/backup/
