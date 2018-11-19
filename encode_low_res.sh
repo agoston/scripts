@@ -14,7 +14,7 @@ BITRATE=$[C_BITRATE/C_YRES*HEIGHT]
 if [[ $BITRATE -gt $C_BITRATE ]]; then
 	BITRATE=$C_BITRATE
 fi
-BR_OPT="-c:v libvpx-vp9 -b:v $BITRATE -quality good -speed 1 -g 96 -tile-columns 1 -threads 4 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25"
+BR_OPT="-c:v libvpx-vp9 -crf 28 -b:v $BITRATE -quality good -speed 1 -g 96 -tile-columns 2 -threads 4 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25"
 
 set -x
 exec ffmpeg -i "$1" -map 0:v -map 0:a $VF_OPT $BR_OPT -ac 1 -c:a libopus -b:a 96k -f webm "${1%.*}.webm"
