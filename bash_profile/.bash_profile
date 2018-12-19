@@ -14,3 +14,5 @@ export ignoreeof=0
 
 # atm j9 has a lot of troubles, do not make it default
 switch_java 1.8
+
+export PATH="$HOME/.cargo/bin:$PATH"
