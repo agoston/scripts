@@ -17,7 +17,10 @@ def response():
         time.sleep(0.2)
         return False
 
-    print(">" + echo.decode())
+    try:
+        print(">" + echo.decode())
+    except:
+        pass
     
     # second line is response
     response = ser.readline()
@@ -25,7 +28,10 @@ def response():
         time.sleep(0.2)
         return False
         
-    print(response.decode())
+    try:
+        print(response.decode())
+    except:
+        pass
             
     if b"." == response:
         return True
@@ -39,12 +45,12 @@ def response():
 
 # send ; to empty buffer
 ser.write(";".encode("ascii", "ignore"))
-response();
+response()
 
 # retry 5 times
 for i in range(5):
     ser.write(command.encode("ascii", "ignore"))
-    time.sleep(1);
+    time.sleep(1)
     if not response():
         continue
 
