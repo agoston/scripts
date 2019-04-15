@@ -1,2 +1,2 @@
-export XZ_DEFAULTS="-9 -T 0"
+export XZ_OPT="-9 -T 0"
 export MAVEN_OPTS="-Xms512m -Xmx2G -XX:MaxPermSize=256m"
