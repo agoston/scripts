@@ -1,4 +1,9 @@
 #!/bin/sh
-#rm -f /zoh.dmg
-#hdiutil create -megabytes 16 -fs HFS+ /zoh
-hdiutil attach /zoh.dmg -mountpoint /Applications/Confer.app
+# disable
+#rm -f /opt/nocb.dmg
+#hdiutil create -megabytes 16 -fs HFS+ /opt/nocb
+#hdiutil attach /opt/nocb.dmg -mountpoint /System/Library/Extensions/CbDefenseSensor.kext
+#kextcache -i /
+
+# keep disabled
+hdiutil attach /opt/nocb.dmg -mountpoint /System/Library/Extensions/CbDefenseSensor.kext
