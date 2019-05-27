@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
+
+# stupid, stupid macos -- case insensitive FS
+if [[ $MACHTYPE =~ apple-darwin ]]; then
+	# brew install rename
+	exec rename --lower-case --force *
+fi
+
+shopt -u nocasematch
 ls -1 | while read i; do
 	j="${i,,}"
-	if [ "$i" != "$j" ]; then
+	if [[ "$i" != "$j" ]]; then
 		mv -v -n "$i" "$j"
 	fi
 done
