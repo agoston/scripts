@@ -4,8 +4,10 @@ alias mi="mvn install"
 alias gpr="git pull --rebase"
 alias gprr='find . -type d -name .git | parallel "pushd {.}; git pull --rebase; popd"'
 alias gs="git status"
-alias gc="git checkout"
-alias gcm="git checkout master"
+
+docker_psql() {
+	docker-compose exec db psql $1 bol_deploy
+}
 
 rest() {
 	curl -H 'Accept: application/json' "$@" | formatjson | less
