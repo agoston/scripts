@@ -1,6 +1,9 @@
 #!/bin/bash
+# was until 2020-01-23; upped as it doesn't make sense to keep it so low anymore
+#C_YRES=600
+#C_BITRATE=1800000
 C_YRES=800
-C_BITRATE=2500000
+C_BITRATE=2400000
 
 HEIGHT=$(ffprobe -loglevel 16 -show_streams -select_streams v:0 "$1" | gawk -F '[=.]' '/^height=/ {printf("%s\n", $2);}' | sed 's/N\/A//')
 
@@ -17,7 +20,7 @@ fi
 BR_OPT="-c:v libvpx-vp9 -crf 28 -b:v $BITRATE -quality good -speed 1 -g 96 -tile-columns 2 -threads 4 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25"
 
 set -x
-exec ffmpeg -i "$1" -map 0:v -map 0:a $VF_OPT $BR_OPT -ac 1 -c:a libopus -b:a 96k -f webm "${1%.*}.webm"
+exec ffmpeg -i "$1" -map 0:v -map 0:a $VF_OPT $BR_OPT -ac 1 -c:a libopus -b:a 128k -f webm "${1%.*}.webm"
 
 exit 0
 
