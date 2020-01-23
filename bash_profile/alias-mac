@@ -2,3 +2,4 @@ alias top='top -o -cpu -s 2'
 alias v='cd /Volumes'
 alias xpoo='rm -rf .Spotlight-V100/ .Trashes/ ._.Trashes .fseventsd/'
 alias flash_backup="rsync -rlptv ~/Library/Preferences/Macromedia/'Flash Player' /net/seagoat/home/ftp/games/'Epic Battle Fantasy'/"
+alias minecraft="cd ~/.minecraft; switch_java 1.8; java -jar Launcher.jar"

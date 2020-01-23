@@ -1,6 +1,6 @@
 #!/bin/bash
-C_YRES=600
-C_BITRATE=1800000
+C_YRES=800
+C_BITRATE=2500000
 
 HEIGHT=$(ffprobe -loglevel 16 -show_streams -select_streams v:0 "$1" | gawk -F '[=.]' '/^height=/ {printf("%s\n", $2);}' | sed 's/N\/A//')
 
