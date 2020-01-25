@@ -7,7 +7,8 @@ C_BITRATE=2400000
 
 HEIGHT=$(ffprobe -loglevel 16 -show_streams -select_streams v:0 "$1" | gawk -F '[=.]' '/^height=/ {printf("%s\n", $2);}' | sed 's/N\/A//')
 
-if [[ ${HEIGHT:-$C_YRES} -ge $C_YRES ]]; then
+# don't rescale if height difference < 10%
+if [[ ${HEIGHT:-$C_YRES} -ge $((C_YRES*11/10)) ]]; then
 	VF_OPT="-vf scale=-1:${C_YRES}"
 	HEIGHT=$C_YRES
 fi
@@ -17,7 +18,7 @@ BITRATE=$[C_BITRATE/C_YRES*HEIGHT]
 if [[ $BITRATE -gt $C_BITRATE ]]; then
 	BITRATE=$C_BITRATE
 fi
-BR_OPT="-c:v libvpx-vp9 -crf 28 -b:v $BITRATE -quality good -speed 1 -g 96 -tile-columns 2 -threads 4 -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25"
+BR_OPT="-c:v libvpx-vp9 -crf 28 -b:v $BITRATE -ss 0:1:0 -to 0:1:10"
 
 set -x
 exec ffmpeg -i "$1" -map 0:v -map 0:a $VF_OPT $BR_OPT -ac 1 -c:a libopus -b:a 128k -f webm "${1%.*}.webm"
