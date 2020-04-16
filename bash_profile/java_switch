@@ -14,7 +14,8 @@ function switch_java() {
   fi
 }
 
-alias j6='switch_java 1.6'
-alias j7='switch_java 1.7'
 alias j8='switch_java 1.8'
+alias j11='switch_java 11'
 alias j12='switch_java 12'
+alias j13='switch_java 13'
+alias j13='switch_java 14'
