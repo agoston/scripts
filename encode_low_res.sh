@@ -18,6 +18,8 @@ BITRATE=$[C_BITRATE/C_YRES*HEIGHT]
 if [[ $BITRATE -gt $C_BITRATE ]]; then
 	BITRATE=$C_BITRATE
 fi
+
+# ffmpeg 4.2.2 FAILS on HDR videos - look washed out :(
 BR_OPT="-c:v libvpx-vp9 -crf 28 -b:v $BITRATE -ss 0:1:0 -to 0:1:10"
 
 set -x
