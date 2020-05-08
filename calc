@@ -1,1 +1,3 @@
-echo | awk "{ print $* }"
+exec python3 -c 'from math import *; print(eval('\'$*\''))'
+
+#echo | awk "{ print $* }"
