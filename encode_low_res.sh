@@ -1,9 +1,9 @@
 #!/bin/bash
 # was until 2020-01-23; upped as it doesn't make sense to keep it so low anymore
-#C_YRES=600
-#C_BITRATE=1800000
-C_YRES=800
-C_BITRATE=2400000
+C_YRES=600
+C_BITRATE=1800000
+#C_YRES=800
+#C_BITRATE=2400000
 
 HEIGHT=$(ffprobe -loglevel 16 -show_streams -select_streams v:0 "$1" | gawk -F '[=.]' '/^height=/ {printf("%s\n", $2);}' | sed 's/N\/A//')
 
@@ -20,7 +20,7 @@ if [[ $BITRATE -gt $C_BITRATE ]]; then
 fi
 
 # ffmpeg 4.2.2 FAILS on HDR videos - look washed out :(
-BR_OPT="-c:v libvpx-vp9 -crf 28 -b:v $BITRATE -ss 0:1:0 -to 0:1:10"
+BR_OPT="-c:v libvpx-vp9 -crf 28 -b:v $BITRATE -quality good"
 
 set -x
 exec ffmpeg -i "$1" -map 0:v -map 0:a $VF_OPT $BR_OPT -ac 1 -c:a libopus -b:a 128k -f webm "${1%.*}.webm"
