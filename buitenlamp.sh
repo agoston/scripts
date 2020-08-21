@@ -7,8 +7,8 @@ ON=$(gawk "/^${TODAY} / {print \$4}" <$BASH_SOURCE)
 # swallows at's stderr, but no other way to silence it for cron
 echo "~/bin/fs20_send.sh 1 off" | at $OFF 2>/dev/null
 echo "~/bin/fs20_send.sh 1 on" | at $ON 2>/dev/null
-echo "~/bin/rfm.py relay 2 0 >>~/bin/rfm.log" | at $OFF 2>/dev/null
-echo "~/bin/rfm.py relay 2 1 >>~/bin/rfm.log" | at $ON 2>/dev/null
+#echo "~/bin/rfm.py relay 2 0 >>~/bin/rfm.log" | at $OFF 2>/dev/null
+#echo "~/bin/rfm.py relay 2 1 >>~/bin/rfm.log" | at $ON 2>/dev/null
 
 exit 0
 
