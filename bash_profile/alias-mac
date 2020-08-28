@@ -1,5 +1,7 @@
 alias top='top -o -cpu -s 2'
 alias v='cd /Volumes'
 alias xpoo='rm -rf .Spotlight-V100/ .Trashes/ ._.Trashes .fseventsd/'
-alias flash_backup="rsync -rlptv ~/Library/Preferences/Macromedia/'Flash Player' /net/seagoat/home/ftp/games/'Epic Battle Fantasy'/"
-alias minecraft="cd ~/.minecraft; switch_java 1.8; java -jar Launcher.jar"
+
+pqiv() {
+	pqiv --command-2='exiftran -i -2' --command-9='exiftran -i -9' --command-4="cp -v '\$1' '${HOME}'" --command-5="cd '${HOME}'; rm -fv '\$1'" img_20191026_101722.jpg
+}
