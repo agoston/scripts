@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEST=/home/ftp/www/blocklist.gz
+DEST=/c3/www/blocklist.gz
 FILE=$(tempfile)
 
 grep -A9999 '^##DATA' $0 | egrep -v '^#|^$' | while read i; do
