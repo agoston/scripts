@@ -1,18 +1,19 @@
 #!/bin/bash
 
+REMOTE=/net/seagoat/c3
+
 [[ `find ~/bin/sync_seagoat.last -mmin -720 | wc -l` -gt 0 ]] && exit 0
 
-# quit if src/dst doesn't exist
-mountpoint -q /net/seagoat/home/ftp || exit 0
+mountpoint -q $REMOTE || exit 0
+ls $REMOTE &>/dev/null || exit 0
 
 TODAY=$(date +%Y%m%d)
 
 (
-
 # windows jatekallasok
 if mountpoint -q /mnt/win10; then
 	# na ez egy furi dolog. $HOME/Saved Games tokures, viszont van jatekallas mindenhol szanaszejjel.
-	tar cjf /net/seagoat/home/ftp/backup/bruin/win-$TODAY.tar.bz2 \
+	tar cjf $REMOTE/backup/bruin/win-$TODAY.tar.bz2 \
 	--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*' \
 	'/mnt/win10/Users/gazember/AppData/Roaming' \
 	'/mnt/win8/Program Files (x86)/Steam/userdata' \
@@ -28,16 +29,16 @@ fi
 #tar cjf /net/seagoat/home/ftp/backup/bruin/pepperflash-${TODAY}.tar.bz2 '/home/us/.config/google-chrome/Default/Pepper Data/'
 
 # home
-rsync -avH --delete --ignore-errors /home/us/ /net/seagoat/home/ftp/backup/bruin/home/us/
+rsync -avH --delete --ignore-errors /home/us/ $REMOTE/backup/bruin/home/us/
 
 # webplay
-rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/www/webplay/ /var/www/webplay/
+#rsync -avH --delete --ignore-errors $REMOTE/www/webplay/ /var/www/webplay/
 
 # backup seagoat
 if mountpoint -q /mnt/backup.crypted; then
 	cat ~/.encfs | encfs /mnt/backup.crypted /mnt/backup -i 5 -S
-	rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/{archive,book,apps,everyday_life,games,music,www} /mnt/backup/
-	rsync -avH --delete --ignore-errors /net/seagoat/home/ftp/backup/{cica,maci,seagoat,webplay} /mnt/backup/backup/
+	rsync -avH --delete --ignore-errors $REMOTE/{archive,book,apps,everyday_life,games,music,www} /mnt/backup/
+	rsync -avH --delete --ignore-errors $REMOTE/backup/seagoat /mnt/backup/backup/
 	fusermount -uz /mnt/backup
 fi
 
