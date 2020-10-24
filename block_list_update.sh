@@ -4,7 +4,7 @@ DEST=/c3/www/blocklist.gz
 FILE=$(tempfile)
 
 grep -A9999 '^##DATA' $0 | egrep -v '^#|^$' | while read i; do
-	wget -O- "$i" | gunzip >>$FILE
+	wget -q -O- "$i" | gunzip >>$FILE
 done
 
 OLDLINES=$(zcat $DEST | wc -l)
