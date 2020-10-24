@@ -47,7 +47,7 @@ do
 done
 
 set -e
-DESTDIR=/net/seagoat/home/ftp/www/pictures/blog/$DATE
+DESTDIR=/net/seagoat/c3/www/pictures/blog/$DATE
 mkdir -p $DESTDIR 2>/dev/null
 cp *_small.jpg *_big.jpg $DESTDIR/
 cd $DESTDIR
