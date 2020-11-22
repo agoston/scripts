@@ -11,15 +11,15 @@ TODAY=$(date +%Y%m%d)
 
 (
 # windows jatekallasok
-if mountpoint -q /mnt/win10; then
+#if mountpoint -q /mnt/win10; then
 	# na ez egy furi dolog. $HOME/Saved Games tokures, viszont van jatekallas mindenhol szanaszejjel.
-	tar cjf $REMOTE/backup/bruin/win-$TODAY.tar.bz2 \
-	--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*' \
-	'/mnt/win10/Users/gazember/AppData/Roaming' \
-	'/mnt/win8/Program Files (x86)/Steam/userdata' \
-	'/mnt/win10/Program Files (x86)/Steam/userdata' \
-	/mnt/win10/Users/gazember/cc_save.dat*
-fi
+#	tar cjf $REMOTE/backup/bruin/win-$TODAY.tar.bz2 \
+#	--exclude='/mnt/win10/Users/gazember/AppData/Roaming/.minecraft*' \
+#	'/mnt/win10/Users/gazember/AppData/Roaming' \
+#	'/mnt/win8/Program Files (x86)/Steam/userdata' \
+#	'/mnt/win10/Program Files (x86)/Steam/userdata' \
+#	/mnt/win10/Users/gazember/cc_save.dat*
+#fi
 # ezt peti telefosta memekkel
 #	'/mnt/win10/Users/gazember/Documents' \
 
