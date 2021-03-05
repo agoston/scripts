@@ -1,21 +1,6 @@
 #!/bin/bash
 
 case "$1" in
-0)
-	chmod 755 "$2"
-	echo 'private.'
-	;;
-1)
-	chmod 644 "$2"
-	echo 'public.'
-	;;
-
-6)
-	NAME=$2;
-	NAME=${NAME%%.JPG}_SND.MP3
-	mpg123 $NAME
-	;;
-	
 4)
 	cp -v "$2" ~
 	echo 'selected.'
